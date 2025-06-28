@@ -62,28 +62,33 @@ const PostReview = () => {
   }
 
   }
-  const get_dealer = async ()=>{
-    const res = await fetch(dealer_url, {
-      method: "GET"
-    });
+const get_dealer = async () => {
+  try {
+    const res = await fetch(dealer_url);
     const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      let dealerobjs = Array.from(retobj.dealer)
-      if(dealerobjs.length > 0)
-        setDealer(dealerobjs[0])
-    }
-  }
+    console.log("Dealer response:", retobj);
 
-  const get_cars = async ()=>{
-    const res = await fetch(carmodels_url, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    
-    let carmodelsarr = Array.from(retobj.CarModels)
-    setCarmodels(carmodelsarr)
+    if (retobj.status === 200) {
+      const dealers = Array.isArray(retobj.dealer) ? retobj.dealer : [retobj.dealer];
+      if (dealers.length > 0) setDealer(dealers[0]);
+    }
+  } catch (error) {
+    console.error("Dealer fetch error:", error);
   }
+};
+
+const get_cars = async () => {
+  try {
+    const res = await fetch(carmodels_url);
+    const retobj = await res.json();
+    console.log("Cars response:", retobj);
+
+    setCarmodels(retobj.CarModels || []);
+  } catch (error) {
+    console.error("Car fetch error:", error);
+  }
+};
+
   useEffect(() => {
     get_dealer();
     get_cars();
